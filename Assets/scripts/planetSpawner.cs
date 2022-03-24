@@ -15,38 +15,28 @@ public class planetSpawner : MonoBehaviour
 
     List<GameObject> planets;
 
+    ScoreTime st;
+
     private void Start()
     {
         spawnpoints = new int[] { -4, -2, 2, 4 };
         planets = new List<GameObject>();
         spawn();
+
+        st = FindObjectOfType<ScoreTime>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (planets.Exists(x => x.tag == "planet") && !isPlanetsDestroyed)
+        if (player.transform.position.x > planets[0].transform.position.x && !isPlanetsDestroyed)
         {
-            if (player.transform.position.x > planets[0].transform.position.x)
-            {
-                spawn();
-                isPlanetsDestroyed = true;
-            }
-
-          
+           spawn();
+           st.score++;
+           isPlanetsDestroyed = true;
         }
 
-        for (int i = 0; i < planets.Count; i++)
-        {
-            if (planets[i].transform.position.x < -10)
-            {
-                Destroy(planets[i]);
-                planets.RemoveAt(i);
-                isPlanetsDestroyed = false;
-            }
-
-        }
-
+        destroyPlanets();
     }
 
     void spawn()
@@ -67,5 +57,47 @@ public class planetSpawner : MonoBehaviour
             planets.Add(Instantiate(planet, new Vector2(10, spawnpoints[Random.Range(0, 2)]), Quaternion.identity));
             planets.Add(Instantiate(planet, new Vector2(10, spawnpoints[Random.Range(2, 4)]), Quaternion.identity));
         }
+    }
+
+    void destroyPlanets()
+    {
+        for (int i = 0; i < planets.Count; i++)
+        {
+            if (planets[i].transform.position.x < -10)
+            {
+                Destroy(planets[i]);
+                planets.Remove(planets[i]);
+               
+               
+            }
+
+           
+
+        }
+
+        if (!planets.Exists(x => x.transform.position.x < player.transform.position.x))
+            isPlanetsDestroyed = false;
+
+      
+       
+    }
+
+    public void restartSpawner()
+    {
+
+        for (int i = 0; i < planets.Count; i++)
+        {      
+           Destroy(planets[i]);
+        }
+
+        planets.Clear();
+        if (st.score > st.highScore)
+            PlayerPrefs.SetInt("highScore", st.score);     
+
+        st.highScore = PlayerPrefs.GetInt("highScore");
+        st.score = 0;
+        isPlanetsDestroyed = false;
+        spawn();
+       
     }
 }
