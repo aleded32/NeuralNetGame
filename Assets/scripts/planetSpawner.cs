@@ -13,7 +13,7 @@ public class planetSpawner : MonoBehaviour
     int[] spawnpoints;
     bool isPlanetsDestroyed;
 
-    List<GameObject> planets;
+    public List<GameObject> planets;
 
     ScoreTime st;
 
@@ -41,22 +41,9 @@ public class planetSpawner : MonoBehaviour
 
     void spawn()
     {
-        spawnArea = Random.Range(0, 3);
-
-
-        if (spawnArea == 0)
-        {
-            planets.Add(Instantiate(planet, new Vector2(10, spawnpoints[Random.Range(0, 2)]), Quaternion.identity));
-        }
-        else if (spawnArea == 1)
-        {
-            planets.Add(Instantiate(planet, new Vector2(10, spawnpoints[Random.Range(2, 4)]), Quaternion.identity));
-        }
-        else
-        {
+        
             planets.Add(Instantiate(planet, new Vector2(10, spawnpoints[Random.Range(0, 2)]), Quaternion.identity));
             planets.Add(Instantiate(planet, new Vector2(10, spawnpoints[Random.Range(2, 4)]), Quaternion.identity));
-        }
     }
 
     void destroyPlanets()
