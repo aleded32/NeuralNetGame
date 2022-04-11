@@ -8,6 +8,7 @@ public class playerMovement : MonoBehaviour
     public float jumpForce;
     Rigidbody2D rb;
     bool iskeyPressed;
+    public GameObject pauseMenu;
 
     void Start()
     {
@@ -19,6 +20,7 @@ public class playerMovement : MonoBehaviour
     void Update()
     {
         move();
+        pauseGame();
     }
 
     void move()
@@ -29,5 +31,21 @@ public class playerMovement : MonoBehaviour
             
         }
         
+    }
+
+    void pauseGame()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && !iskeyPressed)
+        {
+            Time.timeScale = 0.0f;
+            pauseMenu.SetActive(true);
+            iskeyPressed = true;
+        }
+        else if(Input.GetKeyDown(KeyCode.Escape) && iskeyPressed)
+        {
+            Time.timeScale = 1.0f;
+            pauseMenu.SetActive(false);
+            iskeyPressed = false;
+        }
     }
 }
