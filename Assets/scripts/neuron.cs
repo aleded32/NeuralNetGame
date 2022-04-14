@@ -5,18 +5,15 @@ using UnityEngine;
 public class neuron
 {
     public enum neuronLayer {INPUT, HIDDEN, OUTPUT};
-    public float weight;
-    int bias;
+    public int bias = 1;
     neuronLayer layer;
-    float inputValue = 0;
+    public float inputValue = 0;
 
-    neuron(neuronLayer _layer, float _inputValue)
+    public neuron(neuronLayer _layer, float _inputValue)
     {
         layer = _layer;
-        weight = Random.value;
 
-        if (layer == neuronLayer.INPUT)
-            inputValue = _inputValue;
+
     }
 
    
