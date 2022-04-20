@@ -7,6 +7,7 @@ public class neuralNetwork : MonoBehaviour
 
     playerMovement pm;
     planetSpawner ps;
+    birdSpawner bs;
 
     neuron[] inputLayer;
     neuron[] hiddenLayer;
@@ -18,12 +19,14 @@ public class neuralNetwork : MonoBehaviour
     float distanceFromPlanets;
     float verticalSpeed;
 
+    float[] neuronErrorInputHidden = new float[3] {0,0,0 };
+    float neuronErrorHiddenOutput = 0;
 
     void Start()
     {
         pm = gameObject.GetComponent<playerMovement>();
         ps = FindObjectOfType<planetSpawner>();
-
+        bs = FindObjectOfType<birdSpawner>();
 
         inputHiddenWeights = new List<float>();
         hiddenOutputWeights = new List<float>();
@@ -50,7 +53,7 @@ public class neuralNetwork : MonoBehaviour
 
     public bool doNeuralNetwork()
     {
-        distanceFromPlanets = disBetweenPlanetsPlayer(ps.planets[1].transform.position, ps.planets[0].transform.position);
+        distanceFromPlanets = disBetweenPlanetsPlayer(ps.planets[0].transform.position, ps.planets[1].transform.position);
         verticalSpeed = gameObject.GetComponent<Rigidbody2D>().velocity.y;
 
         inputLayer[0].inputValue = distanceFromPlanets;
@@ -64,37 +67,73 @@ public class neuralNetwork : MonoBehaviour
             {
 
                 hiddenLayer[j].inputValue += inputLayer[i].inputValue * inputHiddenWeights[j + neuronConnection];
+                //Debug.Log(inputHiddenWeights[j + neuronConnection]);
+
                 if (i == inputLayer.Length - 1)
                 {
-                    hiddenLayer[j].inputValue -= inputLayer[i].bias;
-                    hiddenLayer[j].inputValue = sigmoidActivationFunction(hiddenLayer[j].inputValue);
+                    
+                    hiddenLayer[j].inputValue = HyperBolicTangentActivationFunction(hiddenLayer[j].inputValue);
+                    
                     outputLayer.inputValue += hiddenLayer[j].inputValue * hiddenOutputWeights[j];
+                    outputLayer.inputValue = HyperBolicTangentActivationFunction(outputLayer.inputValue);
                     
                 }
             }
             neuronConnection += 3; 
         }
 
-        Debug.Log(outputLayer.inputValue);
+        //foreach (neuron hidden in hiddenLayer)
 
-        if (outputLayer.inputValue <= 0)
-            return false;
-        else
-            return true;
+        Debug.Log(outputLayer.inputValue);
+        return 0 < outputLayer.inputValue;
 
     }
 
-       
-
-    float sigmoidActivationFunction(float x)
+    public void backPropagation()
     {
-        return 1.0f / (1.0f + Mathf.Exp(-x));
+        if (outputLayer.inputValue > 0)
+            neuronErrorHiddenOutput = Mathf.Pow((outputLayer.inputValue - 1),3);
+        else if (outputLayer.inputValue < 0)
+            neuronErrorHiddenOutput = Mathf.Pow((outputLayer.inputValue + 1),3);
+
+        for (int i = 0; i < neuronErrorInputHidden.Length; i++)
+        {
+            for (int j = 0; j < inputHiddenWeights.Count; j++)
+            {
+                neuronErrorInputHidden[i] += (inputHiddenWeights[j] * neuronErrorHiddenOutput);
+            }
+
+        }
+
+        for (int i = 0; i < hiddenOutputWeights.Count; i++)
+        {
+            hiddenOutputWeights[i] -= 0.17f * neuronErrorHiddenOutput * outputLayer.inputValue;
+        }
+
+        int k = 0;
+        for (int i = 0; i < inputHiddenWeights.Count; i++)
+        {
+            if (k > 2)
+                k = 0;
+
+            
+            inputHiddenWeights[i] -= 0.17f * neuronErrorInputHidden[k] * hiddenLayer[k].inputValue;
+            k++;
+        }
+
+       
+    }
+
+
+    float HyperBolicTangentActivationFunction(float x)
+    {
+        return (Mathf.Exp(x) - Mathf.Exp(-x)) / (Mathf.Exp(x) + Mathf.Exp(-x));
     }
 
     public float disBetweenPlanetsPlayer(Vector2 planet1, Vector2 planet2)
     {
         float dis = (planet1.y + planet2.y) / 2;
-        return Vector2.Distance(transform.position, new Vector2(transform.position.x, dis));
+        return Vector2.Distance(transform.position, new Vector2(transform.position.x,dis));
 
     }
 
@@ -103,9 +142,11 @@ public class neuralNetwork : MonoBehaviour
     {
         if (doNeuralNetwork())
         {
+           
             pm.move();
+            
         }
-        outputLayer.inputValue = 0;
+        
     }
 
   

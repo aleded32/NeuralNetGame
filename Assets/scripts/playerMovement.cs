@@ -8,12 +8,16 @@ public class playerMovement : MonoBehaviour
     Rigidbody2D rb;
     bool iskeyPressed;
     public GameObject pauseMenu;
+    public float fitness = 0;
+    public bool isMoving;
 
     void Start()
     {
         
         iskeyPressed = false;
+        isMoving = true;
         rb = gameObject.GetComponent<Rigidbody2D>();
+        
     }
 
     // Update is called once per frame

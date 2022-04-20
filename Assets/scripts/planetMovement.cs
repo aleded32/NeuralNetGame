@@ -5,6 +5,8 @@ using UnityEngine;
 public class planetMovement : MonoBehaviour
 {
     public int speed;
+    
+
     void Start()
     {
         
