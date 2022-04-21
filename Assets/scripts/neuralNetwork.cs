@@ -67,13 +67,12 @@ public class neuralNetwork : MonoBehaviour
             {
 
                 hiddenLayer[j].inputValue += inputLayer[i].inputValue * inputHiddenWeights[j + neuronConnection];
-                //Debug.Log(inputHiddenWeights[j + neuronConnection]);
 
                 if (i == inputLayer.Length - 1)
                 {
                     
                     hiddenLayer[j].inputValue = HyperBolicTangentActivationFunction(hiddenLayer[j].inputValue);
-                    
+                   
                     outputLayer.inputValue += hiddenLayer[j].inputValue * hiddenOutputWeights[j];
                     outputLayer.inputValue = HyperBolicTangentActivationFunction(outputLayer.inputValue);
                     
@@ -84,30 +83,39 @@ public class neuralNetwork : MonoBehaviour
 
         //foreach (neuron hidden in hiddenLayer)
 
-        Debug.Log(outputLayer.inputValue);
-        return 0 < outputLayer.inputValue;
+        //Debug.Log(0 <= outputLayer.inputValue);
+        return 0 <= outputLayer.inputValue;
 
+    }
+
+    float hyperBolicTangentDervitiave(float x)
+    {
+        return 1- Mathf.Pow((Mathf.Exp(x) - Mathf.Exp(-x)) / (Mathf.Exp(x) + Mathf.Exp(-x)),2);
     }
 
     public void backPropagation()
     {
+
         if (outputLayer.inputValue > 0)
-            neuronErrorHiddenOutput = Mathf.Pow((outputLayer.inputValue - 1),3);
+            neuronErrorHiddenOutput = (1 - outputLayer.inputValue);
         else if (outputLayer.inputValue < 0)
-            neuronErrorHiddenOutput = Mathf.Pow((outputLayer.inputValue + 1),3);
+            neuronErrorHiddenOutput = (1 + outputLayer.inputValue);
+        
+        
 
         for (int i = 0; i < neuronErrorInputHidden.Length; i++)
         {
-            for (int j = 0; j < inputHiddenWeights.Count; j++)
-            {
-                neuronErrorInputHidden[i] += (inputHiddenWeights[j] * neuronErrorHiddenOutput);
-            }
-
+            if (hiddenLayer[i].inputValue > 0)
+               neuronErrorInputHidden[i] = (1 - hiddenLayer[i].inputValue);
+            else if (outputLayer.inputValue < 0)
+                neuronErrorInputHidden[i] = (1 + hiddenLayer[i].inputValue);
         }
+        
+        
 
         for (int i = 0; i < hiddenOutputWeights.Count; i++)
         {
-            hiddenOutputWeights[i] -= 0.17f * neuronErrorHiddenOutput * outputLayer.inputValue;
+            hiddenOutputWeights[i] -= 0.3f * neuronErrorHiddenOutput * hyperBolicTangentDervitiave(outputLayer.inputValue) * outputLayer.inputValue;
         }
 
         int k = 0;
@@ -117,11 +125,11 @@ public class neuralNetwork : MonoBehaviour
                 k = 0;
 
             
-            inputHiddenWeights[i] -= 0.17f * neuronErrorInputHidden[k] * hiddenLayer[k].inputValue;
+            inputHiddenWeights[i] -= 0.3f * neuronErrorInputHidden[k] * hyperBolicTangentDervitiave(hiddenLayer[k].inputValue) * hiddenLayer[k].inputValue;
             k++;
         }
+        
 
-       
     }
 
 
@@ -133,7 +141,7 @@ public class neuralNetwork : MonoBehaviour
     public float disBetweenPlanetsPlayer(Vector2 planet1, Vector2 planet2)
     {
         float dis = (planet1.y + planet2.y) / 2;
-        return Vector2.Distance(transform.position, new Vector2(transform.position.x,dis));
+        return Vector2.Distance(transform.position, new Vector2(transform.position.x,dis - 0.25f));
 
     }
 
