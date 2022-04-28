@@ -7,14 +7,14 @@ public class neuralNetwork : MonoBehaviour
 
     playerMovement pm;
     planetSpawner ps;
-    birdSpawner bs;
+    geneticAlgo ga;
 
     neuron[] inputLayer;
     neuron[] hiddenLayer;
-    neuron outputLayer;
+    public neuron outputLayer;
 
-    List<float> inputHiddenWeights;
-    List<float> hiddenOutputWeights;
+    public List<float> inputHiddenWeights;
+    public List<float> hiddenOutputWeights;
 
     float distanceFromPlanets;
     float verticalSpeed;
@@ -26,7 +26,7 @@ public class neuralNetwork : MonoBehaviour
     {
         pm = gameObject.GetComponent<playerMovement>();
         ps = FindObjectOfType<planetSpawner>();
-        bs = FindObjectOfType<birdSpawner>();
+        ga = FindObjectOfType<geneticAlgo>();
 
         inputHiddenWeights = new List<float>();
         hiddenOutputWeights = new List<float>();
@@ -53,13 +53,13 @@ public class neuralNetwork : MonoBehaviour
 
     public bool doNeuralNetwork()
     {
-        distanceFromPlanets = disBetweenPlanetsPlayer(ps.planets[0].transform.position, ps.planets[1].transform.position);
-        verticalSpeed = gameObject.GetComponent<Rigidbody2D>().velocity.y;
+        
 
         inputLayer[0].inputValue = distanceFromPlanets;
         inputLayer[1].inputValue = verticalSpeed;
         //input to hidden layer
-       
+        
+
         int neuronConnection = 0;
         for (int i = 0; i < inputLayer.Length; i++)
         {
@@ -67,95 +67,81 @@ public class neuralNetwork : MonoBehaviour
             {
 
                 hiddenLayer[j].inputValue += inputLayer[i].inputValue * inputHiddenWeights[j + neuronConnection];
-
-                if (i == inputLayer.Length - 1)
-                {
-                    
-                    hiddenLayer[j].inputValue = HyperBolicTangentActivationFunction(hiddenLayer[j].inputValue);
-                   
-                    outputLayer.inputValue += hiddenLayer[j].inputValue * hiddenOutputWeights[j];
-                    outputLayer.inputValue = HyperBolicTangentActivationFunction(outputLayer.inputValue);
-                    
-                }
+                
+                
             }
             neuronConnection += 3; 
         }
 
-        //foreach (neuron hidden in hiddenLayer)
+        for (int k = 0; k < hiddenLayer.Length; k++)
+        {
+            hiddenLayer[k].inputValue = (float)System.Math.Tanh(hiddenLayer[k].inputValue);
+            //Debug.Log("hidden layer " + k + " " + hiddenLayer[k].inputValue);
+            // Debug.Log("hidden Values " + hiddenLayer[j].inputValue);
+            outputLayer.inputValue += hiddenLayer[k].inputValue * hiddenOutputWeights[k];
+        }
 
-        //Debug.Log(0 <= outputLayer.inputValue);
+        outputLayer.inputValue = (float)System.Math.Tanh(outputLayer.inputValue);
+        //foreach (neuron hidden in hiddenLayer)
+        
+
         return 0 <= outputLayer.inputValue;
 
     }
 
-    float hyperBolicTangentDervitiave(float x)
-    {
-        return 1- Mathf.Pow((Mathf.Exp(x) - Mathf.Exp(-x)) / (Mathf.Exp(x) + Mathf.Exp(-x)),2);
-    }
-
-    public void backPropagation()
-    {
-
-        if (outputLayer.inputValue > 0)
-            neuronErrorHiddenOutput = (1 - outputLayer.inputValue);
-        else if (outputLayer.inputValue < 0)
-            neuronErrorHiddenOutput = (1 + outputLayer.inputValue);
-        
-        
-
-        for (int i = 0; i < neuronErrorInputHidden.Length; i++)
-        {
-            if (hiddenLayer[i].inputValue > 0)
-               neuronErrorInputHidden[i] = (1 - hiddenLayer[i].inputValue);
-            else if (outputLayer.inputValue < 0)
-                neuronErrorInputHidden[i] = (1 + hiddenLayer[i].inputValue);
-        }
-        
-        
-
-        for (int i = 0; i < hiddenOutputWeights.Count; i++)
-        {
-            hiddenOutputWeights[i] -= 0.3f * neuronErrorHiddenOutput * hyperBolicTangentDervitiave(outputLayer.inputValue) * outputLayer.inputValue;
-        }
-
-        int k = 0;
-        for (int i = 0; i < inputHiddenWeights.Count; i++)
-        {
-            if (k > 2)
-                k = 0;
-
-            
-            inputHiddenWeights[i] -= 0.3f * neuronErrorInputHidden[k] * hyperBolicTangentDervitiave(hiddenLayer[k].inputValue) * hiddenLayer[k].inputValue;
-            k++;
-        }
-        
-
-    }
 
 
-    float HyperBolicTangentActivationFunction(float x)
-    {
-        return (Mathf.Exp(x) - Mathf.Exp(-x)) / (Mathf.Exp(x) + Mathf.Exp(-x));
-    }
+ 
+
+
+    
 
     public float disBetweenPlanetsPlayer(Vector2 planet1, Vector2 planet2)
     {
-        float dis = (planet1.y + planet2.y) / 2;
-        return Vector2.Distance(transform.position, new Vector2(transform.position.x,dis - 0.25f));
-
+        float dis = ((planet1.y + planet2.y) / 2) - 0.5f;
+        if (dis <= 0)
+            dis = 0;
+        return Vector3.Distance(gameObject.transform.position, new Vector3(gameObject.transform.position.x, dis));
+        
+       
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (doNeuralNetwork())
+
+        distanceFromPlanets = disBetweenPlanetsPlayer(ps.planets[0].transform.position, ps.planets[1].transform.position);
+        verticalSpeed = gameObject.GetComponent<Rigidbody2D>().velocity.y;
+
+      
+
+        if (!pm.isNotMoving)
         {
-           
-            pm.move();
             
+            if (0 >= gameObject.GetComponent<Rigidbody2D>().velocity.y && doNeuralNetwork() == true)
+            {
+
+                pm.move();
+
+            }
         }
+        else
+            ga.crossover();
+
         
+
+
+       // Debug.Log(pm.jumpForce);
+
+        
+
     }
 
-  
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(gameObject.transform.position, new Vector2(gameObject.transform.position.x, distanceFromPlanets));
+
+    }
+
 }

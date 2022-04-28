@@ -9,31 +9,50 @@ public class playerMovement : MonoBehaviour
     bool iskeyPressed;
     public GameObject pauseMenu;
     public float fitness = 0;
-    public bool isMoving;
+    public bool isNotMoving;
+    planetSpawner ps;
+    birdSpawner bs;
 
     void Start()
     {
         
         iskeyPressed = false;
-        isMoving = true;
+        isNotMoving = false;
         rb = gameObject.GetComponent<Rigidbody2D>();
+
+        ps = FindObjectOfType<planetSpawner>();
+        bs = FindObjectOfType<birdSpawner>();
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+        if (!isNotMoving)
+        {
+            gameObject.GetComponent<Collider2D>().enabled = true;
+            fitness++;
+        }
+        else
+        {
+            if (gameObject.transform.position.y < -8)
+            {
+                gameObject.GetComponent<Collider2D>().enabled = true;
+            }
+            else
+                gameObject.GetComponent<Collider2D>().enabled = false;
+        }
+
         pauseGame();
     }
 
     public void move()
     {
         
-            rb.velocity = Vector2.up * jumpForce * Time.deltaTime;
-            
-        
-        
+        rb.velocity = Vector2.up * jumpForce * Time.deltaTime;
+
+       
     }
 
     void pauseGame()

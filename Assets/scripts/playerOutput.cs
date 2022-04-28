@@ -26,10 +26,5 @@ public class playerOutput : MonoBehaviour
         return dis;
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(gameObject.transform.position, new Vector2(gameObject.transform.position.x, playerDisFromCentre));
-        
-    }
+    
 }

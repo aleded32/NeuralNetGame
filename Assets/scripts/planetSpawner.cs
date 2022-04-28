@@ -7,13 +7,13 @@ public class planetSpawner : MonoBehaviour
    
    
     public GameObject planet;
-    public GameObject player;
 
     int spawnArea;
     int[] spawnpoints;
     bool isPlanetsDestroyed;
 
     public List<GameObject> planets;
+    birdSpawner bs;
 
     ScoreTime st;
 
@@ -24,12 +24,13 @@ public class planetSpawner : MonoBehaviour
         spawn();
 
         st = FindObjectOfType<ScoreTime>();
+        bs = GetComponent<birdSpawner>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (player.transform.position.x > planets[0].transform.position.x && !isPlanetsDestroyed)
+        if (bs.birds.Exists(x => x.transform.position.x > planets[0].transform.position.x) && !isPlanetsDestroyed)
         {
            spawn();
            st.score++;
@@ -62,7 +63,7 @@ public class planetSpawner : MonoBehaviour
 
         }
 
-        if (!planets.Exists(x => x.transform.position.x < player.transform.position.x))
+        if (!planets.Exists(x => x.transform.position.x < bs.birds[0].transform.position.x))
             isPlanetsDestroyed = false;
 
       
@@ -79,9 +80,9 @@ public class planetSpawner : MonoBehaviour
 
         planets.Clear();
         if (st.score > st.highScore)
-            PlayerPrefs.SetInt("highScore", st.score);     
+            st.highScore = st.score;
 
-        st.highScore = PlayerPrefs.GetInt("highScore");
+        
         st.score = 0;
         isPlanetsDestroyed = false;
         spawn();
