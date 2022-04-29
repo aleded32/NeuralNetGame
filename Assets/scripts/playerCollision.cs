@@ -18,13 +18,13 @@ public class playerCollision : MonoBehaviour
     {
         if (bs.allrocketsDead)
         {
-            int i = 0;
+            float i = 0;
             foreach (GameObject rockets in bs.birds)
             {
                 rockets.GetComponent<playerMovement>().fitness = 0;
                 rockets.GetComponent<playerMovement>().isNotMoving = false;
-                rockets.transform.position = new Vector3(-5.24f, -2 + i , 0f);
-                i++;
+                rockets.transform.position = new Vector3(-5.24f, 1 - i , 0f);
+                i+= 0.5f;
             }
 
             ps.restartSpawner();

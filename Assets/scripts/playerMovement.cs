@@ -36,7 +36,7 @@ public class playerMovement : MonoBehaviour
         }
         else
         {
-            if (gameObject.transform.position.y < -8)
+            if (gameObject.transform.position.y < -6)
             {
                 gameObject.GetComponent<Collider2D>().enabled = true;
             }

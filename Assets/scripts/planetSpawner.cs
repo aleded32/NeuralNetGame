@@ -9,7 +9,7 @@ public class planetSpawner : MonoBehaviour
     public GameObject planet;
 
     int spawnArea;
-    int[] spawnpoints;
+    float[] spawnpoints;
     bool isPlanetsDestroyed;
 
     public List<GameObject> planets;
@@ -19,7 +19,7 @@ public class planetSpawner : MonoBehaviour
 
     private void Start()
     {
-        spawnpoints = new int[] { -4, -2, 2, 4 };
+        spawnpoints = new float[] { -5, -3.5f, 3.5f, 5 };
         planets = new List<GameObject>();
         spawn();
 
@@ -30,11 +30,18 @@ public class planetSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (bs.birds.Exists(x => x.transform.position.x > planets[0].transform.position.x) && !isPlanetsDestroyed)
+        if (bs.birds.Exists(x => x.transform.position.x > planets[0].transform.position.x))
         {
-           spawn();
-           st.score++;
-           isPlanetsDestroyed = true;
+            foreach (GameObject rocket in bs.birds)
+            {
+                if (!rocket.GetComponent<playerMovement>().isNotMoving && !isPlanetsDestroyed)
+                {
+                    spawn();
+                    st.score++;
+                    isPlanetsDestroyed = true;
+                }
+            }
+           
         }
 
         destroyPlanets();

@@ -16,8 +16,8 @@ public class neuralNetwork : MonoBehaviour
     public List<float> inputHiddenWeights;
     public List<float> hiddenOutputWeights;
 
-    float distanceFromPlanets;
-    float verticalSpeed;
+    public float distanceFromPlanets;
+    public float verticalSpeed;
 
     float[] neuronErrorInputHidden = new float[3] {0,0,0 };
     float neuronErrorHiddenOutput = 0;
@@ -85,7 +85,7 @@ public class neuralNetwork : MonoBehaviour
         //foreach (neuron hidden in hiddenLayer)
         
 
-        return 0 <= outputLayer.inputValue;
+        return  outputLayer.inputValue > 0;
 
     }
 
@@ -98,7 +98,7 @@ public class neuralNetwork : MonoBehaviour
 
     public float disBetweenPlanetsPlayer(Vector2 planet1, Vector2 planet2)
     {
-        float dis = ((planet1.y + planet2.y) / 2) - 0.5f;
+        float dis = ((planet1.y + planet2.y) / 2) - 0.2f;
         if (dis <= 0)
             dis = 0;
         return Vector3.Distance(gameObject.transform.position, new Vector3(gameObject.transform.position.x, dis));
@@ -106,19 +106,28 @@ public class neuralNetwork : MonoBehaviour
        
     }
 
+    float disXbetweenRocketPlanet(Vector2 planet1)
+    {
+        return Vector2.Distance(gameObject.transform.position, new Vector3(planet1.x, gameObject.transform.position.y));
+    }
+
     // Update is called once per frame
     void Update()
     {
 
         distanceFromPlanets = disBetweenPlanetsPlayer(ps.planets[0].transform.position, ps.planets[1].transform.position);
-        verticalSpeed = gameObject.GetComponent<Rigidbody2D>().velocity.y;
 
-      
+        if(ps.planets.Count > 2)
+            verticalSpeed = disXbetweenRocketPlanet(ps.planets[2].transform.position);
+        else if(ps.planets.Count <= 2)
+            verticalSpeed = disXbetweenRocketPlanet(ps.planets[0].transform.position);
+
+
 
         if (!pm.isNotMoving)
         {
             
-            if (0 >= gameObject.GetComponent<Rigidbody2D>().velocity.y && doNeuralNetwork() == true)
+            if (doNeuralNetwork() == true)
             {
 
                 pm.move();
@@ -131,7 +140,7 @@ public class neuralNetwork : MonoBehaviour
         
 
 
-       // Debug.Log(pm.jumpForce);
+        //Debug.Log(verticalSpeed);
 
         
 

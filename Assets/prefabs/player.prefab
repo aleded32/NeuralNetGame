@@ -4914,7 +4914,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c661e84014ce6a64298877074bb1e5fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: 500
+  jumpForce: 550
   pauseMenu: {fileID: 0}
   fitness: 0
   isNotMoving: 0
@@ -4945,3 +4945,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputHiddenWeights: []
   hiddenOutputWeights: []
+  distanceFromPlanets: 0
+  verticalSpeed: 0
