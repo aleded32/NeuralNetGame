@@ -6,7 +6,7 @@ public class playerCollision : MonoBehaviour
 {
     planetSpawner ps;
     public birdSpawner bs;
-    
+    bool isNotAi = false;
 
     private void Start()
     {
@@ -16,21 +16,24 @@ public class playerCollision : MonoBehaviour
 
     void Update()
     {
-        if (bs.allrocketsDead)
+        if (!isNotAi)
         {
-            float i = 0;
-            foreach (GameObject rockets in bs.birds)
+            if (bs.allrocketsDead)
             {
-                rockets.GetComponent<playerMovement>().fitness = 0;
-                rockets.GetComponent<playerMovement>().isNotMoving = false;
-                rockets.transform.position = new Vector3(-5.24f, 1 - i , 0f);
-                i+= 0.5f;
+                float i = 0;
+                foreach (GameObject rockets in bs.birds)
+                {
+                    rockets.GetComponent<playerMovement>().fitness = 0;
+                    rockets.GetComponent<playerMovement>().isNotMoving = false;
+                    rockets.transform.position = new Vector3(-5.24f, 2 - i, 0f);
+                    i += 0.5f;
+                }
+
+                ps.restartSpawner();
+                ps.hasSpawned = false;
+                bs.allrocketsDead = false;
+
             }
-
-            ps.restartSpawner();
-
-            bs.allrocketsDead = false;
-
         }
     }
 
@@ -38,9 +41,15 @@ public class playerCollision : MonoBehaviour
     {
         if (collision.collider.tag == "planet" || collision.collider.tag == "border")
         {
-           
-            gameObject.GetComponent<playerMovement>().isNotMoving = true;
-
+            if (isNotAi)
+            {
+                transform.position = new Vector3(-5.24f, 0f, 0f);
+                ps.restartSpawner();
+            }
+            else if (!isNotAi)
+            {
+                gameObject.GetComponent<playerMovement>().isNotMoving = true;
+            }
         }
     }
 }

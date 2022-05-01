@@ -32,18 +32,35 @@ public class geneticAlgo : MonoBehaviour
 
             for (int i = 2; i < bs.birds.Count; i++)
             {
-                if (Random.Range(0, 1) % 2 == 0)
+
+                for (int j = 0; j < 6; j++)
                 {
-                    bs.birds[i].GetComponent<neuralNetwork>().inputHiddenWeights = bs.birds[0].GetComponent<neuralNetwork>().inputHiddenWeights;
-                    bs.birds[i].GetComponent<neuralNetwork>().hiddenOutputWeights = bs.birds[0].GetComponent<neuralNetwork>().hiddenOutputWeights;
+                    if (Random.Range(0, 1) % 2 == 0)
+                    {
+                        bs.birds[i].GetComponent<neuralNetwork>().inputHiddenWeights[j] = bs.birds[0].GetComponent<neuralNetwork>().inputHiddenWeights[j];
 
                 }
-                else
-                {
-                        bs.birds[i].GetComponent<neuralNetwork>().inputHiddenWeights = bs.birds[1].GetComponent<neuralNetwork>().inputHiddenWeights;
-                        bs.birds[i].GetComponent<neuralNetwork>().hiddenOutputWeights = bs.birds[1].GetComponent<neuralNetwork>().hiddenOutputWeights;
+                    else
+                    {
+                        bs.birds[i].GetComponent<neuralNetwork>().inputHiddenWeights[j] = bs.birds[1].GetComponent<neuralNetwork>().inputHiddenWeights[j];
 
+                    }
                 }
+
+                for (int k = 0; k < 3; k++)
+                {
+                    if (Random.Range(0, 1) % 2 == 0)
+                    {
+                        bs.birds[i].GetComponent<neuralNetwork>().hiddenOutputWeights[k] = bs.birds[0].GetComponent<neuralNetwork>().hiddenOutputWeights[k];
+
+                    }
+                    else
+                    {
+                        bs.birds[i].GetComponent<neuralNetwork>().hiddenOutputWeights[k] = bs.birds[1].GetComponent<neuralNetwork>().hiddenOutputWeights[k];
+
+                    }
+                }
+
 
                 if (Random.Range(0, bs.birds.Count) == 2)
                 {

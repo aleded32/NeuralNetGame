@@ -98,7 +98,7 @@ public class neuralNetwork : MonoBehaviour
 
     public float disBetweenPlanetsPlayer(Vector2 planet1, Vector2 planet2)
     {
-        float dis = ((planet1.y + planet2.y) / 2) - 0.2f;
+        float dis = ((planet1.y + planet2.y) / 2);
         if (dis <= 0)
             dis = 0;
         return Vector3.Distance(gameObject.transform.position, new Vector3(gameObject.transform.position.x, dis));

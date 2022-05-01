@@ -12,6 +12,7 @@ public class playerMovement : MonoBehaviour
     public bool isNotMoving;
     planetSpawner ps;
     birdSpawner bs;
+    bool isNotAi = false;
 
     void Start()
     {
@@ -28,21 +29,29 @@ public class playerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (!isNotMoving)
+        if (!isNotAi)
         {
-            gameObject.GetComponent<Collider2D>().enabled = true;
-            fitness++;
+            if (!isNotMoving)
+            {
+                gameObject.GetComponent<Collider2D>().enabled = true;
+                fitness++;
+            }
+            else
+            {
+                if (gameObject.transform.position.y < -5)
+                {
+                    gameObject.GetComponent<Collider2D>().enabled = true;
+                }
+                else
+                    gameObject.GetComponent<Collider2D>().enabled = false;
+            }
         }
         else
         {
-            if (gameObject.transform.position.y < -6)
-            {
-                gameObject.GetComponent<Collider2D>().enabled = true;
-            }
-            else
-                gameObject.GetComponent<Collider2D>().enabled = false;
+            if (Input.GetKeyDown(KeyCode.Space))
+                move();
         }
+           
 
         pauseGame();
     }
